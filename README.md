@@ -40,23 +40,22 @@ The project architecture relies on three distinct nodes, typically organized wit
 
 ## Step-by-Step Implementation Roadmap
 
-1. **Step 1: Controller Setup & Kinematics**  
+1. **Controller Setup & Kinematics**  
    Create the `turtle_controller` node, subscribe to `/turtle1/pose`, and implement a control loop using basic geometry and math to navigate toward an arbitrary target coordinate by publishing to `/turtle1/cmd_vel`.
    
-2. **Step 2: Spawner Implementation**  
+2. **Spawner Implementation**  
    Create the `turtle_spawner` node utilizing a timer to trigger the native `/spawn` service at a set frequency, generating new turtles at random coordinates ($x, y \in [0.0, 11.0]$).
 
-3. **Step 3: State Tracking & Topic Publishing**  
+3. **State Tracking & Topic Publishing**  
    Maintain an internal array of alive turtles inside `turtle_spawner` and broadcast it via the `/alive_turtles` topic. Update `turtle_controller` to subscribe to this topic and target the first entity listed in the array.
 
-4. **Step 4: Catch Logic & Service Integration**  
+4. **Catch Logic & Service Integration**  
    Implement the `/catch_turtle` service on `turtle_spawner`. Configure `turtle_controller` to invoke this service upon reaching a target, triggering `turtle_spawner` to call the native `/kill` service, purge the target from the active array, and publish the updated list.
 
-5. **Step 5: Algorithmic Enhancement**  
+5. **Algorithmic Enhancement**  
    Upgrade the target-selection logic in `turtle_controller` so that the master turtle dynamically tracks and pursues the **closest** available turtle rather than defaulting to the first index.
 
-6. **Step 6: Parameterization and Launch Configuration**  
-   Scale the application by integrating runtime parameters and configuration files within a `my_robot_bringup` package:
+6. **Parameterization and Launch Configuration**  
+   Scale the application by integrating runtime parameters and configuration files within a `my_robot_bringup` using an `.xml` format for launch files and a `.yaml` format for parameter files:
    * **/turtle_controller parameters:** `catch_closest_turtle_first`
    * **/turtle_spawner parameters:** `spawn_frequency`, `turtle_name_prefix`  
-   Deploy the completed system using a unified ROS 2 launch file alongside a YAML parameter file.
