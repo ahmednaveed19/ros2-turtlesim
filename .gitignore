@@ -1,0 +1,66 @@
+# ROS 2 colcon build artifacts
+/build/
+/install/
+/log/
+**/build/
+**/install/
+**/log/
+
+# C++ Build outputs & objects
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.d
+*.gch
+*.pch
+*.ilk
+*.pdb
+*.dwo
+*.exe
+*.out
+*.app
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+.cmake/
+
+# Python (common in ROS 2 packages)
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+.cproject
+*.pro.user
+
+# Clangd & Linting cache
+.cache/
+.clang-format
+.clang-tidy
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini

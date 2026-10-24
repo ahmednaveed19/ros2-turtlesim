@@ -2,6 +2,8 @@
 #include <cmath>
 #include "turtlesim/msg/pose.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "my_robot_interfaces/msg/turtle.hpp"
+#include "my_robot_interfaces/msg/turtle_array.hpp"
 
 using namespace std::chrono_literals;
 using namespace std::placeholders;
@@ -11,14 +13,12 @@ class TurtleControllerNode : public rclcpp::Node
 public:
     TurtleControllerNode() : Node("turtle_controller"), name_("turtle1"), turtlesim_up_(false)
     {
-        target_x_ = 8.0;
-        target_y_ = 4.0;
-
         cmd_vel_publisher_ = this->create_publisher<geometry_msgs::msg::Twist>(
             name_ + "/cmd_vel", 10);
         pose_subscriber_ = this->create_subscription<turtlesim::msg::Pose>(
             name_ + "/pose", 10, std::bind(&TurtleControllerNode::callbackPose, this, _1));
-
+        alive_turtles_subscriber_ = this->create_subscription<my_robot_interfaces::msg::TurtleArray>(
+            "alive_turtles", 10, std::bind(&TurtleControllerNode::callbackAliveTurtles, this, _1));
         control_loop_timer_ = this->create_wall_timer(
             0.01s, std::bind(&TurtleControllerNode::controlLoop, this));
     }
@@ -28,6 +28,14 @@ private:
     {
         pose_ = *pose.get();
         turtlesim_up_ = true;
+    }
+
+    void callbackAliveTurtles(const my_robot_interfaces::msg::TurtleArray::SharedPtr msg)
+    {
+        if (!msg->turtles.empty())
+        {
+            turtle_to_catch_ = msg->turtles.at(0);
+        }
     }
 
     void publishCmdVel(double x, double theta)
@@ -40,13 +48,13 @@ private:
 
     void controlLoop()
     {
-        if (!turtlesim_up_)
+        if (!turtlesim_up_ || turtle_to_catch_.name == "")
         {
             return;
         }
 
-        double dist_x = target_x_ - pose_.x;
-        double dist_y = target_y_ - pose_.y;
+        double dist_x = turtle_to_catch_.x - pose_.x;
+        double dist_y = turtle_to_catch_.y - pose_.y;
         double distance = std::sqrt(dist_x * dist_x + dist_y * dist_y);
 
         auto msg = geometry_msgs::msg::Twist();
@@ -79,14 +87,14 @@ private:
         cmd_vel_publisher_->publish(msg);
     }
 
-    double target_x_;
-    double target_y_;
     std::string name_;
     turtlesim::msg::Pose pose_;
     bool turtlesim_up_;
+    my_robot_interfaces::msg::Turtle turtle_to_catch_;
 
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_publisher_;
     rclcpp::Subscription<turtlesim::msg::Pose>::SharedPtr pose_subscriber_;
+    rclcpp::Subscription<my_robot_interfaces::msg::TurtleArray>::SharedPtr alive_turtles_subscriber_;
     rclcpp::TimerBase::SharedPtr control_loop_timer_;
 };
 
