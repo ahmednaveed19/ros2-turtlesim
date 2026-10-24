@@ -5,6 +5,17 @@ The objective of this project is to build an interactive target-tracking simulat
 
 ---
 
+## Prerequisites & Dependencies
+* **Operating System:** Ubuntu 24.04
+* **ROS 2 Distribution:** ROS 2 Jazzy
+
+## Running the Project
+```bash
+ros2 launch my_robot_bring_up turtlesim_catch_them_all.launch.xml
+```
+
+---
+
 ## System Architecture & Nodes
 The project architecture relies on three distinct nodes, typically organized within a dedicated package (`turtlesim_project_cpp`):
 
