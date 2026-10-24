@@ -14,6 +14,9 @@ class TurtleControllerNode : public rclcpp::Node
 public:
     TurtleControllerNode() : Node("turtle_controller"), name_("turtle1"), turtlesim_up_(false)
     {
+        this->declare_parameter("catch_closest_turtle_first", true);
+        catch_closest_turtle_first_ = this->get_parameter("catch_closest_turtle_first").as_bool();
+
         cmd_vel_publisher_ = this->create_publisher<geometry_msgs::msg::Twist>(
             name_ + "/cmd_vel", 10);
         pose_subscriber_ = this->create_subscription<turtlesim::msg::Pose>(
@@ -21,6 +24,7 @@ public:
         alive_turtles_subscriber_ = this->create_subscription<my_robot_interfaces::msg::TurtleArray>(
             "alive_turtles", 10, std::bind(&TurtleControllerNode::callbackAliveTurtles, this, _1));
         catch_turtle_client_ = this->create_client<my_robot_interfaces::srv::CatchTurtle>("catch_turtle");
+
         control_loop_timer_ = this->create_wall_timer(
             0.01s, std::bind(&TurtleControllerNode::controlLoop, this));
     }
@@ -32,11 +36,39 @@ private:
         turtlesim_up_ = true;
     }
 
+    double getDistanceFromCurrentPose(my_robot_interfaces::msg::Turtle turtle)
+    {
+        double dist_x = turtle.x - pose_.x;
+        double dist_y = turtle.y - pose_.y;
+        return std::sqrt(dist_x * dist_x + dist_y * dist_y);
+    }
+
+
     void callbackAliveTurtles(const my_robot_interfaces::msg::TurtleArray::SharedPtr msg)
     {
         if (!msg->turtles.empty())
         {
-            turtle_to_catch_ = msg->turtles.at(0);
+            if (catch_closest_turtle_first_)
+            {
+                my_robot_interfaces::msg::Turtle closest_turtle = msg->turtles.at(0);
+                double closest_turtle_distance = getDistanceFromCurrentPose(closest_turtle);
+
+                for (int i = 1; i < (int)msg->turtles.size(); i++)
+                {
+                    double distance = getDistanceFromCurrentPose(msg->turtles.at(i));
+                    if (distance < closest_turtle_distance)
+                    {
+                        closest_turtle = msg->turtles.at(i);
+                        closest_turtle_distance = distance;
+                    }
+                }
+
+                turtle_to_catch_ = closest_turtle;
+            }
+            else
+            {
+                turtle_to_catch_ = msg->turtles.at(0);
+            }
         }
     }
 
@@ -117,6 +149,7 @@ private:
     std::string name_;
     turtlesim::msg::Pose pose_;
     bool turtlesim_up_;
+    bool catch_closest_turtle_first_;
     my_robot_interfaces::msg::Turtle turtle_to_catch_;
 
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_publisher_;

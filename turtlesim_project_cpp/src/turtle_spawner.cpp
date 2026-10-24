@@ -14,7 +14,11 @@ class TurtleSpawnerNode : public rclcpp::Node
 public:
     TurtleSpawnerNode() : Node("turtle_spawner"), turtle_counter_(0)
     {
-        turtle_name_prefix_ = "turtle";
+        this->declare_parameter("turtle_name_prefix", "turtle");
+        this->declare_parameter("spawn_frequency", 0.5);
+        turtle_name_prefix_ = this->get_parameter("turtle_name_prefix").as_string();
+        spawn_frequency_ = this->get_parameter("spawn_frequency").as_double();
+
         alive_turtles_publisher_ =
             this->create_publisher<my_robot_interfaces::msg::TurtleArray>("alive_turtles", 10);
         spawn_client_ = this->create_client<turtlesim::srv::Spawn>("spawn");
@@ -22,7 +26,8 @@ public:
         catch_turtle_service_ = this->create_service<my_robot_interfaces::srv::CatchTurtle>(
             "catch_turtle", std::bind(&TurtleSpawnerNode::callbackCatchTurtle, this, _1, _2));
         spawn_turtle_timer_ = this->create_wall_timer(
-            1s, std::bind(&TurtleSpawnerNode::spawnNewTurtle, this));
+            std::chrono::milliseconds((int)(1000.0 / spawn_frequency_)),
+            std::bind(&TurtleSpawnerNode::spawnNewTurtle, this));
     }
 
 private:
@@ -130,6 +135,7 @@ private:
 
     std::string turtle_name_prefix_;
     int turtle_counter_;
+    double spawn_frequency_;
     my_robot_interfaces::msg::Turtle turtle_to_save_;
     std::vector<my_robot_interfaces::msg::Turtle> alive_turtles_;
     std::string turtle_to_remove_;
