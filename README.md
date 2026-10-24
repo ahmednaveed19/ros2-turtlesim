@@ -10,9 +10,23 @@ The objective of this project is to build an interactive target-tracking simulat
 * **ROS 2 Distribution:** ROS 2 Jazzy
 
 ## Running the Project
-```bash
-ros2 launch my_robot_bring_up turtlesim_catch_them_all.launch.xml
-```
+1. **Build the Workspace**  
+   Open a terminal, navigate to your ROS 2 workspace root directory, and build the project:
+   ```bash
+   colcon build
+   ```
+2. **Source the Workspace**  
+   Open a new terminal and source your workspace overlay: 
+   ```bash
+   source install/setup.bash
+   ```
+   **Note:** Adding `source install/setup.bash` command ensures that ROS 2 can locate your built packages and custom interfaces when running in the active terminal session.
+
+3. **Execute the Launch File**  
+   Run the launch command to start the application:
+   ```bash
+   ros2 launch my_robot_bringup turtlesim_catch_them_all.launch.xml
+   ```
 
 ---
 
