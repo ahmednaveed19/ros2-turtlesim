@@ -24,7 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            "controller = turtlesim_project_py.turtle_controller:main"
+            "controller = turtlesim_project_py.turtle_controller:main",
+            "spawner = turtlesim_project_py.turtle_spawner:main"
         ],
     },
 )
