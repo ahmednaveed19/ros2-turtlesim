@@ -1,4 +1,4 @@
-# ROS 2 Project: Turtlesim "Catch Them All"
+# ROS 2 Turtlesim: Catch Them All — Autonomous Target Tracking
 
 ## Project Overview
 The objective of this project is to build an interactive target-tracking simulation using ROS 2 (implemented in both C++ and Python), leveraging the standard **Turtlesim** package as a visual environment. The core application features a primary "main" turtle that autonomously tracks, pursues, and catches target turtles spawned dynamically across the screen.
