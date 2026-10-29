@@ -4,7 +4,7 @@
   <name>turtlesim_project_py</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="mahmednaveed19@gmail.com">ahmed</maintainer>
+  <maintainer email="ahmed@todo.todo">ahmed</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>
