@@ -1,7 +1,7 @@
 # ROS 2 Project: Turtlesim "Catch Them All"
 
 ## Project Overview
-The objective of this project is to build an interactive target-tracking simulation using ROS 2 and C++, leveraging the standard **Turtlesim** package as a visual environment. The core application features a primary "main" turtle that autonomously tracks, pursues, and catches target turtles spawned dynamically across the screen.
+The objective of this project is to build an interactive target-tracking simulation using ROS 2 (implemented in both C++ and Python), leveraging the standard **Turtlesim** package as a visual environment. The core application features a primary "main" turtle that autonomously tracks, pursues, and catches target turtles spawned dynamically across the screen.
 
 ---
 
@@ -23,15 +23,20 @@ The objective of this project is to build an interactive target-tracking simulat
    **Note:** Adding `source install/setup.bash` command ensures that ROS 2 can locate your built packages and custom interfaces when running in the active terminal session.
 
 3. **Execute the Launch File**  
-   Run the launch command to start the application:
+   Run the respective launch command depending on which implementation you want to start:
+   * To run the C++ executable:
    ```bash
-   ros2 launch my_robot_bringup turtlesim_catch_them_all.launch.xml
+   ros2 launch my_robot_bringup turtlesim_catch_them_all_cplus.launch.xml
+   ```
+   * To run the Python executable:
+   ```bash
+   ros2 launch my_robot_bringup turtlesim_catch_them_all_python.launch.xml
    ```
 
 ---
 
 ## System Architecture & Nodes
-The project architecture relies on three distinct nodes, typically organized within a dedicated package (`turtlesim_project_cpp`):
+The project architecture relies on three distinct nodes, implemented across two independent packages (`turtlesim_project_cpp` for C++ and `turtlesim_project_py` for Python):
 
 1. **`turtlesim` (from the `turtlesim` package):** Serves as the core visual simulation environment.
 2. **`turtle_controller` (Custom Node):** Manages the master turtle (`turtle1`). It runs a high-rate control loop utilizing a proportional (P) controller, subscribes to pose and active turtle data, publishes velocity commands, and communicates catch events.
